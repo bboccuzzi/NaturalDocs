@@ -1,4 +1,10 @@
-# Natural Docs
+# Natural Docs - With HDL support!
+
+NaturalDocs with support for Verilog, SystemVerilog, and VHDL
+Currently supporting:
+- [x] Verilog (WIP)
+- [ ] SystemVerilog
+- [ ] VHDL
 
 Natural Docs is an open source documentation generator for 
 [multiple programming languages](http://www.naturaldocs.org/languages).  You document your code in a 
