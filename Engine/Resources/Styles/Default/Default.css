@@ -745,33 +745,6 @@ body.NDContentPage {
 		padding: .5ex 1ex;
 		}
 
-	.CImage {
-		text-align: center;
-		margin: 1em 0;
-		}
-		.CImage img.KnownDimensions {
-			width: 100%;
-			height: auto;
-			}
-		.CImage img.UnknownDimensions {
-			max-width: 100%;
-			}
-		.CImage a.ZoomLink {
-			cursor: zoom-in;
-			}
-		.CImage a.ZoomLink img {
-			border: none;
-			}
-
-		.CICaption {
-			color: #808080;
-			margin-top: .25em;
-			}
-		.CTopic a.SeeImageLink {
-			color: #808080;
-			font-style: italic;
-			}
-
 	.CBodyNDMarkup {
 		font: 8pt Verdana, sans-serif;
 		color: $MessageTextColor;
@@ -1000,26 +973,31 @@ body.NDContentPage {
 */
 
 .TFunction .NDPrototype,
+.TModule   .NDPrototype,
 .TOperator .NDPrototype {
 	background-color: #F0F0F0;
 	border-color: #C8C8C8;
 	scrollbar-color: #C8C8C8 #F0F0F0;
 	}
 	.TFunction .NDPrototype::-webkit-scrollbar-thumb,
+	.TModule   .NDPrototype::-webkit-scrollbar-thumb,
 	.TOperator .NDPrototype::-webkit-scrollbar-thumb {
 		background-color: #C8C8C8;
 		border-bottom: 1px solid #F0F0F0;
 		}
 	.TFunction .NDPrototype::-webkit-scrollbar-track,
+	.TModule   .NDPrototype::-webkit-scrollbar-track,
 	.TOperator .NDPrototype::-webkit-scrollbar-track {
 		background-color: #F0F0F0;
 		}
 	.TFunction .SuEntryIcon,
+	.TModule   .SuEntryIcon,
 	.TOperator .SuEntryIcon {
 		background-color: #EAEAEA;
 		border: 1px solid #C7C7C7;
 		}
 	.TFunction .SeEntryIcon,
+	.TModule   .SeEntryIcon,
 	.TOperator .SeEntryIcon {
 		background-color: #ECECEC;
 		border: 1px solid #C2C2C2;

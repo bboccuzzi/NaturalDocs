@@ -1097,16 +1097,7 @@ namespace CodeClear.NaturalDocs.Engine.Languages
 
 			// So now we have two topics of the same language, symbol, and type.  Now the assumption is they're the same
 			// unless they're distinguished by parameters.
-
-			ParameterString topicAPrototypeParameters = topicA.PrototypeParameters;
-			ParameterString topicBPrototypeParameters = topicB.PrototypeParameters;
-
-			if (topicAPrototypeParameters == null && topicBPrototypeParameters == null)
-				{  return true;  }
-			else if (topicAPrototypeParameters != null && topicBPrototypeParameters != null)
-				{  return (string.Compare(topicA.PrototypeParameters, topicB.PrototypeParameters, ignoreCase) == 0);  }
-			else
-				{  return false;  }
+			return (string.Compare(topicA.PrototypeParameters, topicB.PrototypeParameters, ignoreCase) == 0);
 			}
 
 
@@ -1539,13 +1530,13 @@ namespace CodeClear.NaturalDocs.Engine.Languages
 				}
 
 			// If "operator" is in the string, make another attempt to see if we can match "operator +" with "operator+".
-			else if (undecoratedTitle.IndexOf("operator", StringComparison.OrdinalIgnoreCase) != -1)
+			else if (undecoratedTitle.IndexOf("operator", StringComparison.CurrentCultureIgnoreCase) != -1)
 				{
 				string undecoratedTitleOp = extraOperatorWhitespaceRegex.Replace(undecoratedTitle, "");
 				string prototypeString = prototypeStart.TextBetween(prototypeEnd);
 				string prototypeStringOp = extraOperatorWhitespaceRegex.Replace(prototypeString, "");
 
-				if (prototypeStringOp.IndexOf(undecoratedTitleOp, StringComparison.OrdinalIgnoreCase) != -1)
+				if (prototypeStringOp.IndexOf(undecoratedTitleOp, StringComparison.CurrentCultureIgnoreCase) != -1)
 					{  return true;  }
 				}
 
@@ -1553,12 +1544,12 @@ namespace CodeClear.NaturalDocs.Engine.Languages
 			else if (tokenizer.ContainsTextBetween(".prototype.", true, prototypeStart, prototypeEnd))
 				{
 				string prototypeString = prototypeStart.TextBetween(prototypeEnd);
-				int prototypeIndex = prototypeString.IndexOf(".prototype.", StringComparison.OrdinalIgnoreCase);
+				int prototypeIndex = prototypeString.IndexOf(".prototype.", StringComparison.CurrentCultureIgnoreCase);
 
 				// We want to keep the trailing period so String.prototype.Function becomes String.Function.
 				prototypeString = prototypeString.Substring(0, prototypeIndex) + prototypeString.Substring(prototypeIndex + 10);
 
-				if (prototypeString.IndexOf(undecoratedTitle, StringComparison.OrdinalIgnoreCase) != -1)
+				if (prototypeString.IndexOf(undecoratedTitle, StringComparison.CurrentCultureIgnoreCase) != -1)
 					{  return true;  }
 				}
 
@@ -2262,18 +2253,11 @@ namespace CodeClear.NaturalDocs.Engine.Languages
 			// IsEmbedded - Use the comment.  We want to be able to merge code topics into embedded comment topics.
 			mergedTopic.IsEmbedded = commentTopic.IsEmbedded;
 
-			// CommentTypeID - If the user specified one, we always want to use that.
+			// CommentTypeID - If the user specified one, we always want to use that.  We don't care if the comment type would normally switch the
+			//					   containing element between an Element and a ParentElement, or if the new type has a different scope setting.  We'll
+			//					   switch to the comment's comment type but retain the code settings for those.
 			if (commentTopic.CommentTypeID != 0)
-				{  
-				mergedTopic.CommentTypeID = commentTopic.CommentTypeID;
-
-				// If this changed whether the topic defines a class, reset the symbols to the comment's
-				if (commentTopic.DefinesClass != codeTopic.DefinesClass)
-					{
-					mergedTopic.Symbol = commentTopic.Symbol;
-					mergedTopic.ClassString = commentTopic.ClassString;
-					}
-				}
+				{  mergedTopic.CommentTypeID = commentTopic.CommentTypeID;  }
 			else
 				{  mergedTopic.CommentTypeID = codeTopic.CommentTypeID;  }
 
@@ -3071,6 +3055,8 @@ namespace CodeClear.NaturalDocs.Engine.Languages
 				{
 				if (element.Topic != null)
 					{
+					if (element.Topic.Symbol == null && element.InCode == true)
+						{  throw new Exception("Code topics may not have undefined symbols before calling GenerateRemainingSymbols().");  }
 					if (element.Topic.Title == null)
 						{  throw new Exception("Headerless topics must be removed before calling GenerateRemainingSymbols().");  }
 					if (element.Topic.LanguageID == 0)
@@ -3402,6 +3388,165 @@ namespace CodeClear.NaturalDocs.Engine.Languages
 			// If we didn't find anything Pascal, then we're C.  If there's no parameters then it doesn't matter which we return.
 			return ParsedPrototype.ParameterStyle.C;
 			}
+
+		/* Function: MarkVerilogParameter
+		 * Marks the tokens in Verilog-style parameters and ports
+		 * Modified from MarkPascalParameter
+		 */
+		protected void MarkVerilogParameter(TokenIterator start, TokenIterator end)
+		{
+			// Pass 1: Count the number of "words" in the parameter prior to the default value and mark the default value.
+			// We'll figure out how to interpret the words in the second pass.  Also mark the colon as the name/type separator 
+			// if it exists.
+
+			int words = 0;
+
+			TokenIterator iterator = start;
+			// Note to self:
+			// This first pass loop will break on any iterator character of interest (separating default value, etc...)
+			// Remember, this function is only for marking a single parameter.
+			while (iterator < end)
+			{
+
+				// Default values
+
+				if (iterator.Character == '=')
+				{
+					iterator.PrototypeParsingType = PrototypeParsingType.DefaultValueSeparator;
+					iterator.Next();
+
+					iterator.NextPastWhitespace(end);
+					TokenIterator endOfDefaultValue = end;
+
+					TokenIterator lookbehind = end;
+					lookbehind.Previous();
+
+					while (lookbehind >= iterator && lookbehind.PrototypeParsingType == PrototypeParsingType.ParamSeparator)
+					{
+						endOfDefaultValue = lookbehind;
+						lookbehind.Previous();
+					}
+
+					endOfDefaultValue.PreviousPastWhitespace(PreviousPastWhitespaceMode.EndingBounds, iterator);
+
+					if (iterator < endOfDefaultValue)
+					{ iterator.SetPrototypeParsingTypeBetween(endOfDefaultValue, PrototypeParsingType.DefaultValue); }
+
+					break;
+				}
+
+
+				// Param separator
+
+				else if (iterator.PrototypeParsingType == PrototypeParsingType.ParamSeparator)
+				{ break; }
+
+
+				// "Words" we're interested in
+
+				else if (TryToSkipTypeOrVarName(ref iterator, end) ||
+						   TryToSkipComment(ref iterator) ||
+						   TryToSkipString(ref iterator) ||
+						   TryToSkipBlock(ref iterator, true))
+				{
+					// If there was a comment in the prototype, that means it specifically wasn't filtered out because it was something
+					// significant like a Splint comment or /*out*/.  Treat it like a modifier.
+
+					// Strings don't really make sense in the prototype until the default value, but we need the parser to handle it anyway
+					// just so it doesn't lose its mind if one occurs.
+
+					// If we come across a block that doesn't immediately follow an identifier, it may be something like a C# property so
+					// treat it as a modifier.  
+
+					// Note - Verilog modules typically span multi-line and have comments - ignore these comments for presentation purposes but do not fail
+
+					words++;
+				}
+
+
+				// Whitespace and any unexpected random symbols
+
+				else
+				{ iterator.Next(); }
+			}
+
+			iterator = start;
+			TokenIterator wordStart, wordEnd;
+
+			while (iterator < end)
+			{
+				wordStart = iterator;
+				bool foundWord = false;
+				bool foundBlock = false;
+
+				if (iterator.PrototypeParsingType == PrototypeParsingType.DefaultValueSeparator ||
+					iterator.PrototypeParsingType == PrototypeParsingType.ParamSeparator)
+				{
+					break;
+				}
+				else if (TryToSkipTypeOrVarName(ref iterator, end))
+				{
+					foundWord = true;
+				}
+				else if (TryToSkipComment(ref iterator) ||
+						  TryToSkipString(ref iterator) ||
+						  TryToSkipBlock(ref iterator, true))
+				{
+					foundWord = true;
+					foundBlock = true;
+				}
+				else
+				{
+					iterator.Next();
+				}
+
+				// Process the word we found
+				if (foundWord)
+				{
+					wordEnd = iterator;
+
+					if (words >= 3)
+					{
+						if (foundBlock && wordEnd.TokenIndex - wordStart.TokenIndex >= 2)
+						{
+							wordStart.PrototypeParsingType = PrototypeParsingType.OpeningTypeModifier;
+
+							TokenIterator lookbehind = wordEnd;
+							lookbehind.Previous();
+							lookbehind.PrototypeParsingType = PrototypeParsingType.ClosingTypeModifier;
+						}
+						else
+						{
+							wordStart.SetPrototypeParsingTypeBetween(wordEnd, PrototypeParsingType.TypeModifier);
+						}
+					}
+					else if (words == 2)
+					{
+						MarkType(wordStart, wordEnd);
+
+						// Go back and change any trailing * or & to parameter modifiers because even if they're textually attached to the type
+						// (int* x) they're actually part of the parameter in C++ (int *x).
+
+						TokenIterator lookbehind = wordEnd;
+						lookbehind.Previous();
+
+						while (lookbehind >= wordStart &&
+								 (lookbehind.Character == '*' || lookbehind.Character == '&' || lookbehind.Character == '^'))
+						{
+							lookbehind.PrototypeParsingType = PrototypeParsingType.ParamModifier;
+							lookbehind.Previous();
+							lookbehind.PreviousPastWhitespace(PreviousPastWhitespaceMode.Iterator, wordStart);
+						}
+					}
+					else if (words == 1)
+					{ MarkName(wordStart, wordEnd); }
+
+					words--;
+				}
+			}
+
+			
+		}
 
 
 		/* Function: MarkCParameter

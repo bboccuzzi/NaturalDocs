@@ -159,6 +159,17 @@ Comment Type: Function
       destructor, destructors
 
 
+Comment Type: Module
+
+    Display Name from Locale: Comments.txt.Module.DisplayName
+    Plural Display Name from Locale: Comments.txt.Module.PluralDisplayName
+
+    Flags: Code
+
+    Keywords:
+      module, modules
+
+
 Comment Type: Operator
 
    Display Name from Locale: Comments.txt.Operator.DisplayName

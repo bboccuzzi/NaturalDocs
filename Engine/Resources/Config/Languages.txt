@@ -41,6 +41,36 @@ Language: C/C++
    Variable Prototype Enders: ; =
 
 
+ Language: Verilog
+
+   Extensions: v vh
+
+   Line Comment: //
+   Block Comment: /* */
+   Enum Values: Under Parent
+   Case Sensitive: Yes
+
+   Class Prototype Enders: ; {
+   Function Prototype Enders: ; {
+   Variable Prototype Enders: ; =
+   Module Prototype Enders: ;
+
+
+Language: SystemVerilog
+
+   Extensions: sv svh
+
+   Line Comment: //
+   Block Comment: /* */
+   Enum Values: Under Parent
+   Case Sensitive: Yes
+
+   Class Prototype Enders: ; {
+   Function Prototype Enders: ; {
+   Variable Prototype Enders: ; =
+   Module Prototype Enders: ;
+
+
 Language: C#
 
    Extension: cs
@@ -183,6 +213,17 @@ Language: Assembly
 Language: Ada
 
    Extensions: ada ads adb
+
+   Line Comment: --
+   Case Sensitive: No
+
+   Function Prototype Enders: ; IS
+   Variable Prototype Enders: ; :=
+
+
+Language: VHDL
+
+   Extensions: vhd vhdl vht
 
    Line Comment: --
    Case Sensitive: No
