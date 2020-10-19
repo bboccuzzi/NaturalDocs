@@ -1,8 +1,10 @@
-
+*.un
+*.un~
 #ignore thumbnails created by windows
 Thumbs.db
 #Ignore files build by Visual Studio
 *.csproj.user
+*.sln
 bin/
 obj/
 CLI.Package.MSI/

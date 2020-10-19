@@ -1,6 +1,7 @@
 # Natural Docs - With HDL support!
 
 NaturalDocs with support for Verilog, SystemVerilog, and VHDL
+
 Currently supporting:
 - [x] Verilog (WIP)
 - [ ] SystemVerilog
