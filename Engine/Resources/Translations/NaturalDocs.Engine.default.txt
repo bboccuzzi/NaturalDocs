@@ -413,6 +413,8 @@ Comments.txt.DatabaseCursor.DisplayName: Cursor
 Comments.txt.DatabaseCursor.PluralDisplayName: Cursors
 Comments.txt.DatabaseTrigger.DisplayName: Trigger
 Comments.txt.DatabaseTrigger.PluralDisplayName: Triggers
+Comments.txt.Module.DisplayName: Module
+Comments.txt.Module.PluralDisplayName: Modules
 
 Comments.txt.KeywordsCannotContain(char): Keywords cannot contain the {0} character.
 Comments.txt.TagsCannotContain(char): Tags cannot contain the {0} character.

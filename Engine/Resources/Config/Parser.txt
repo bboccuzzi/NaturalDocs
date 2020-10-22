@@ -81,6 +81,8 @@ Table: Special Headings
 
 	parameters -> parameters
 	parameter -> parameters
+	ports -> parameters
+	port -> parameters
 	params -> parameters
 	param -> parameters
 	arguments -> parameters

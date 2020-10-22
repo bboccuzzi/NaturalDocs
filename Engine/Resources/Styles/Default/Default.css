@@ -11,7 +11,7 @@
 	and may have its own copyright and distribution terms as decided by its author.
 */
 
-	$HeaderBackgroundColor: #7070C0;
+	$HeaderBackgroundColor: #608E63;
 	$MenuBackgroundColor: #E0E0E0;
 	$SummaryBackgroundColor: #F8F8F8;
 	$ToolTipBackgroundColor: #FFFFF0;
@@ -144,6 +144,7 @@ td {
 	#HSubtitle {
 		font: 10pt $ProjectSubtitleFontFamily;
 		margin-left: .65em;
+        /*4c4c4c*/
 		text-shadow: 0 .1ex .3ex #202020;
 		}
 		#HSubtitle,
@@ -151,7 +152,7 @@ td {
 		#HSubtitle a:hover,
 		#HSubtitle a:active,
 		#HSubtitle a:visited {
-			color: #C8C8C8;
+			color: #C3C3C3;
 			text-decoration: none;
 			}
 
@@ -1324,7 +1325,7 @@ body.NDHomePage {
 
 	/* IE 6, 7, 8, 9 */
 	/* Strings don't get checked for substitutions so set the colors manually. */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7070C0', endColorstr='#E0E0E0', GradientType=0 );
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#608E63', endColorstr='#E0E0E0', GradientType=0 );
 
 	/* IE 10 */
 	background-image: -ms-linear-gradient(top, $HeaderBackgroundColor 0%, $MenuBackgroundColor 100%);
