@@ -1,10 +1,16 @@
-# Natural Docs - With HDL support!
+# Natural Docs - with HDL additions
 
 NaturalDocs with support for Verilog, SystemVerilog, and VHDL
 
 Currently supporting:
 - [x] Verilog (WIP)
-- [ ] SystemVerilog
+- [x] SystemVerilog (WIP)
+	* Supports Modules
+	* Ports as a 'parameter' list
+	* [ ] Modports under interface "class"
+	* [ ] Modules with hierarchy
+	* [ ] Modules page
+	* [ ] Interfaces page
 - [ ] VHDL
 
 Natural Docs is an open source documentation generator for 

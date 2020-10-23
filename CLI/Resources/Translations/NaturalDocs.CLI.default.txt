@@ -21,7 +21,7 @@
 #______________________________________________________________________________
 
 
-Status.Start(version): Natural Docs {0}
+Status.Start(version): Natural Docs - with HDL additions {0}
 Status.End: Done.
 
 Status.StartFileSearch: Searching for files...

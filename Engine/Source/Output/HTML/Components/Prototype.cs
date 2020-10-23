@@ -813,6 +813,7 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 
 			bool addNBSP = end.PreviousPastWhitespace(PreviousPastWhitespaceMode.EndingBounds, start);
 
+			// TODO - Want to put the Verilog/SystemVerilog module brackets ")(" here...
 			if (addLinks)
 				{  AppendSyntaxHighlightedTextWithTypeLinks(start, end, output, links, linkTargets);  }
 			else

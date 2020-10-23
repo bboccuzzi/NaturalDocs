@@ -42,11 +42,12 @@ namespace CodeClear.NaturalDocs.Engine.Prototypes
 		 * 
 		 * C - A C-style prototype with parameters in a form similar to "int x = 12".
 		 * Pascal - A Pascal-style prototype with parameters in a form similar to "x: int := 12".
+		 * Verilog - A Verilog-style prototype with parameters in a form similar to "
 		 * 
 		 * Typeless prototypes will be returned as C-style.
 		 */
 		public enum ParameterStyle : byte
-			{  C, Pascal  }
+			{  C, Pascal, Verilog  }
 
 
 
