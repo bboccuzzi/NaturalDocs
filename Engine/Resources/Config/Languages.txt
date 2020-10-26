@@ -68,7 +68,9 @@ Language: SystemVerilog
    Class Prototype Enders: ; {
    Function Prototype Enders: ; {
    Variable Prototype Enders: ; =
-   Module Prototype Enders: ;
+   Interface Prototype Ender: ;
+   Module Prototype Ender: ;
+   Modport Prototype Ender: ;
 
 
 Language: C#

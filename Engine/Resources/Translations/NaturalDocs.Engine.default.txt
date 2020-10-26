@@ -415,6 +415,8 @@ Comments.txt.DatabaseTrigger.DisplayName: Trigger
 Comments.txt.DatabaseTrigger.PluralDisplayName: Triggers
 Comments.txt.Module.DisplayName: Module
 Comments.txt.Module.PluralDisplayName: Modules
+Comments.txt.Modport.DisplayName: Modport
+Comments.txt.Modport.PluralDisplayName: Modports
 
 Comments.txt.KeywordsCannotContain(char): Keywords cannot contain the {0} character.
 Comments.txt.TagsCannotContain(char): Tags cannot contain the {0} character.

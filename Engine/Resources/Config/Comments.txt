@@ -159,6 +159,17 @@ Comment Type: Function
       destructor, destructors
 
 
+Comment Type: Modport
+
+    Display Name from Locale: Comments.txt.Modport.DisplayName
+    Plural Display Name from Locale: Comments.txt.Modport.PluralDisplayName
+
+    Flags: Code
+
+    Keywords:
+      modport, modports
+
+
 Comment Type: Module
 
     Display Name from Locale: Comments.txt.Module.DisplayName
