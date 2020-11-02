@@ -100,6 +100,7 @@ namespace CodeClear.NaturalDocs.Engine.Languages.Parsers
 			//iterator.MatchesAcrossTokens("#(")
 			while (!trueClose)
 			{
+				trueClose = true;
 				while (iterator.IsInBounds)
 				{
 					if (iterator.Character == '(')
