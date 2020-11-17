@@ -156,7 +156,7 @@ namespace CodeClear.NaturalDocs.Engine.Languages.Parsers
 					}
 					else if (TryToSkipComment(ref iterator) ||
 							   TryToSkipString(ref iterator))
-					{ }
+                    { }
 					else
 					{ iterator.Next(); }
 				}

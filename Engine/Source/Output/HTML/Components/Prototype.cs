@@ -798,6 +798,10 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 				case ParsedPrototype.ParameterStyle.Pascal:
 					parameterClass = "PascalStyle";
 					break;
+				// TODO
+				case ParsedPrototype.ParameterStyle.Verilog:
+					parameterClass = "VerilogStyle";
+					break;
 				default:
 					throw new NotImplementedException();
 				}
@@ -811,22 +815,39 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 
 			output.Append("<td class=\"PBeforeParameters\">");
 
+			// For placing paranthesis inside "BeforeParameters" table.
+			////if (parameterTableSection.ParameterStyle == ParsedPrototype.ParameterStyle.Verilog)
+			//{
+				//output.Append("<tr>");
+
+			//}
+
 			bool addNBSP = end.PreviousPastWhitespace(PreviousPastWhitespaceMode.EndingBounds, start);
 
-			// TODO - Want to put the Verilog/SystemVerilog module brackets ")(" here...
 			if (addLinks)
 				{  AppendSyntaxHighlightedTextWithTypeLinks(start, end, output, links, linkTargets);  }
 			else
 				{  AppendSyntaxHighlightedText(start, end, output);  }
 
-			if (addNBSP)
-				{  output.Append("&nbsp;");  }
 
+
+
+			//if (parameterTableSection.ParameterStyle == ParsedPrototype.ParameterStyle.Verilog)
+			//{
+			// TODO - Want to put the Verilog/SystemVerilog module brackets ")(" here...
+			AppendParameterDecorators(output);
+				if (addNBSP)
+				{ output.Append("&nbsp;"); }
+			// <br/> for blank row
+			
 			output.Append("</td>");
+			//}
 
 			output.Append("<td class=\"PParametersParentCell\">");
+			output.Append("&nbsp;");
 			AppendParameterTable(output);
 			output.Append("</td>");
+			output.Append("</tr>");
 
 			parameterTableSection.GetAfterParameters(out start, out end);
 
@@ -845,6 +866,118 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 			output.Append("</div>");
 			}
 
+		/* Function: AppendParameterDecorators
+		 * The main purpose of this function is to obtain paranthesis qualified as parameter separators (see Verilog/SystemVerilog)
+		 * 
+		 */
+		protected void AppendParameterDecorators (StringBuilder output)
+			{
+			CalculateParameterTable(parameterTableSection);
+
+			int firstUsedCell = 0;
+			while (firstUsedCell < NumberOfColumns && parameterTableColumnsUsed[firstUsedCell] == false)
+			{ firstUsedCell++; }
+
+			int lastUsedCell = NumberOfColumns - 1;
+			while (lastUsedCell > 0 && parameterTableColumnsUsed[lastUsedCell] == false)
+			{ lastUsedCell--; }
+
+			output.Append("<table class=\"PDecorators\">");
+
+			for (int parameterIndex = 0; parameterIndex < parameterTableSection.NumberOfParameters; parameterIndex++)
+			{
+				output.Append("<tr>");
+
+				for (int cellIndex = firstUsedCell; cellIndex <= lastUsedCell; cellIndex++)
+				{
+					if (parameterTableColumnsUsed[cellIndex])
+					{
+						string extraClass = null;
+
+						if (cellIndex == firstUsedCell && cellIndex == lastUsedCell)
+						{ extraClass = "first last"; }
+						else if (cellIndex == firstUsedCell)
+						{ extraClass = "first"; }
+						else if (cellIndex == lastUsedCell)
+						{ extraClass = "last"; }
+
+						if (parameterTableTokenIndexes[parameterIndex, cellIndex] == parameterTableTokenIndexes[parameterIndex, cellIndex + 1])
+						{
+							if (extraClass == null)
+							{ output.Append("<td><br/></td>"); }
+							else
+							{ output.Append("<td class=\"" + extraClass + "\"></td>"); }
+						}
+						else
+						{
+							if (ColumnOrder[cellIndex] == Prototype.ColumnType.Symbols || ColumnOrder[cellIndex] == Prototype.ColumnType.Name)
+							{
+								TokenIterator start = parameterTableSection.Start;
+								start.Next(parameterTableTokenIndexes[parameterIndex, cellIndex] - start.TokenIndex);
+
+								TokenIterator end = start;
+								end.Next(parameterTableTokenIndexes[parameterIndex, cellIndex + 1] - end.TokenIndex);
+
+								bool hadTrailingWhitespace = end.PreviousPastWhitespace(PreviousPastWhitespaceMode.EndingBounds, start);
+
+								if (start.Character == '(' || start.Character == ')')
+                                {
+									output.Append("<td class=\"P" + ColumnOrder[cellIndex].ToString() + (extraClass != null ? ' ' + extraClass : "") + "\">");
+									ColumnType type = ColumnOrder[cellIndex];
+
+									// Find the type of the next used cell
+									ColumnType? nextType = null;
+									for (int nextCellIndex = cellIndex + 1; nextCellIndex < NumberOfColumns; nextCellIndex++)
+									{
+										if (parameterTableColumnsUsed[nextCellIndex])
+										{
+											nextType = ColumnOrder[nextCellIndex];
+											break;
+										}
+									}
+
+									// Default value separators always get spaces before.
+									// Property value separators get them unless they're ":", but watch out for ":=".
+									// Type-name separators get them if they're text (SQL's "AS") instead of symbols (Pascal's ":").
+									if (type == ColumnType.DefaultValueSeparator ||
+										(type == ColumnType.PropertyValueSeparator && (start.Character != ':' || start.MatchesAcrossTokens(":="))) ||
+										(type == ColumnType.TypeNameSeparator && start.FundamentalType == FundamentalType.Text))
+									{ output.Append("&nbsp;"); }
+
+									// We don't want to highlight keywords on the Name cell because identifiers can accidentally be marked as them with
+									// basic language support, such as "event" in "wxPaintEvent &event".
+									if (type == ColumnType.Name)
+									{ AppendSyntaxHighlightedText(start, end, output, excludeKeywords: true); }
+									else if (addLinks)
+									{ AppendSyntaxHighlightedTextWithTypeLinks(start, end, output, links, linkTargets, extendTypeSearch: true); }
+									else
+									{ AppendSyntaxHighlightedText(start, end, output); }
+
+									// Default value separators, property value separators, and type/name separators always get spaces after.  Make sure 
+									// the spaces aren't duplicated by the preceding cells.
+									if (type == ColumnType.DefaultValueSeparator ||
+										type == ColumnType.PropertyValueSeparator ||
+										type == ColumnType.TypeNameSeparator ||
+										(hadTrailingWhitespace &&
+											type != ColumnType.DefaultValue &&
+											nextType != ColumnType.DefaultValueSeparator &&
+											nextType != ColumnType.PropertyValueSeparator &&
+											nextType != ColumnType.TypeNameSeparator))
+									{ output.Append("&nbsp;"); }
+
+									output.Append("</td>");
+								}
+
+							}
+						}
+					}
+				}
+
+				output.Append("</tr>");
+			}
+
+			output.Append("</table>");
+		}
 
 		/* Function: AppendParameterTable
 		 */
@@ -915,6 +1048,11 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 			end.Next(parameterTableTokenIndexes[parameterIndex, cellIndex + 1] - end.TokenIndex);
 
 			bool hadTrailingWhitespace = end.PreviousPastWhitespace(PreviousPastWhitespaceMode.EndingBounds, start);
+			if (start.Character == '(' || start.Character == ')')
+            {
+				output.Append("&nbsp;");
+				return;
+            }
 
 			ColumnType type = ColumnOrder[cellIndex];
 
