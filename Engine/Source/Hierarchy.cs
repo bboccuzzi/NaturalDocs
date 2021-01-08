@@ -25,6 +25,8 @@ namespace CodeClear.NaturalDocs.Engine
 		{  
 		File = 0,
 		Class = 1, 
-		Database = 2  
+		Database = 2,
+		Interface = 3,
+		Module = 4
 		}
 	}

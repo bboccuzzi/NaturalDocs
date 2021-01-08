@@ -32,7 +32,7 @@
  *		- Implies Code.
  *		- Used to determine which comments can be used for links in prototypes.
  *		
- * Class Hierarchy and Database Hierarchy:
+ * Class Hierarchy, Database Hierarchy, Interface Hierarchy, and Module Hierarchy:
  * 
  *		- Only one may be defined.
  *		- Scope must be set to Start.
@@ -77,6 +77,8 @@ namespace CodeClear.NaturalDocs.Engine.CommentTypes
 		 * 
 		 *		ClassHierarchy - Set if the comment type should appear in the class hierarchy.
 		 *		DatabaseHierarchy - Set if the comment type should appear in the database hierarchy.
+		 *		InterfaceHierarchy - Set if the comment type should appear in the interface hierarchy.
+		 *		ModuleHierarchy - Set if the comment type should appear in the module hierarchy.
 		 * 
 		 *		Enum - Set if the comment type describes an enum.
 		 *		
@@ -105,9 +107,12 @@ namespace CodeClear.NaturalDocs.Engine.CommentTypes
 			DatabaseHierarchy = 0x0020,
 
 			Enum = 0x0040,
+			
+			InterfaceHierarchy = 0x0080,
+			ModuleHierarchy = 0x0100,
 
 			ConfigurationPropertiesMask = Code | File | Documentation | VariableType |
-																		ClassHierarchy | DatabaseHierarchy | Enum,
+																		ClassHierarchy | DatabaseHierarchy | Enum | InterfaceHierarchy | ModuleHierarchy,
 
 			InSystemFile = 0x1000,
 			InProjectFile = 0x2000,
@@ -147,6 +152,7 @@ namespace CodeClear.NaturalDocs.Engine.CommentTypes
 		 * If strict is true it performs a more rigorous check, which should be done before allowing the engine to start.
 		 * <AddImpliedFlags()> should be called beforehand.
 		 * 
+		 * TODO - Support for module and interface hierarchy flags
 		 */
 		public List<string> Validate (bool strict, CommentType.ScopeValue? scope, string localeModule)
 			{
@@ -210,6 +216,38 @@ namespace CodeClear.NaturalDocs.Engine.CommentTypes
 					  (scope != null && (CommentType.ScopeValue)scope != CommentType.ScopeValue.Start) )
 					{  errors.Add(Locale.Get(localeModule, "CommentTypeFlags.FlagRequiresScope(flag,scope)", "Class Hierarchy", "Start"));  }
 				}
+			else if (InterfaceHierarchy)
+				{
+				if (DatabaseHierarchy)
+					{  errors.Add(Locale.Get(localeModule, "CommentTypeFlags.CantCombine(a,b)", "Interface Hierarchy", "Database Hierarchy"));  }
+				if (strict && !Code)
+					{  errors.Add(Locale.Get(localeModule, "CommentTypeFlags.MustDefineAWithB(a,b)", "Code", "Interface Hierarchy"));  }
+				if (strict && !VariableType)
+					{  errors.Add(Locale.Get(localeModule, "CommentTypeFlags.MustDefineAWithB(a,b)", "Variable Type", "Interface Hierarchy"));  }
+				if (File)
+					{  errors.Add(Locale.Get(localeModule, "CommentTypeFlags.CantCombine(a,b)", "File", "Interface Hierarchy"));  }
+				if (Documentation)
+					{  errors.Add(Locale.Get(localeModule, "CommentTypeFlags.CantCombine(a,b)", "Documentation", "Interface Hierarchy"));  }
+				if ((scope == null && strict) ||
+					  (scope != null && (CommentType.ScopeValue)scope != CommentType.ScopeValue.Start))
+					{  errors.Add(Locale.Get(localeModule, "CommentTypeFlags.FlagRequiresScope(flag,scope)", "Interface Hierarchy", "Start"));  }
+				}
+			else if (ModuleHierarchy)
+				{
+				if (DatabaseHierarchy)
+					{  errors.Add(Locale.Get(localeModule, "CommentTypeFlags.CantCombine(a,b)", "Module Hierarchy", "Database Hierarchy"));  }
+				if (strict && !Code)
+					{  errors.Add(Locale.Get(localeModule, "CommentTypeFlags.MustDefineAWithB(a,b)", "Code", "Module Hierarchy"));  }
+				if (strict && !VariableType)
+					{  errors.Add(Locale.Get(localeModule, "CommentTypeFlags.MustDefineAWithB(a,b)", "Variable Type", "Module Hierarchy"));  }
+				if (File)
+					{  errors.Add(Locale.Get(localeModule, "CommentTypeFlags.CantCombine(a,b)", "File", "Module Hierarchy"));  }
+				if (Documentation)
+					{  errors.Add(Locale.Get(localeModule, "CommentTypeFlags.CantCombine(a,b)", "Documentation", "Module Hierarchy"));  }
+				if ((scope == null && strict) ||
+					  (scope != null && (CommentType.ScopeValue)scope != CommentType.ScopeValue.Start))
+					{  errors.Add(Locale.Get(localeModule, "CommentTypeFlags.FlagRequiresScope(flag,scope)", "Module Hierarchy", "Start"));  }
+				}
 			else if (DatabaseHierarchy)
 				{
 				if (strict && !Code)
@@ -250,13 +288,13 @@ namespace CodeClear.NaturalDocs.Engine.CommentTypes
 		 * Adds flags that are implied by other flags, such as how <Enum> implies <Code> and <VariableType>.  Also sets
 		 * <Code> if <File> or <Documentation> isn't set.
 		 */
-		public void AddImpliedFlags ()
-			{
-			if ((flags & (FlagValues.ClassHierarchy | FlagValues.DatabaseHierarchy | 
-								 FlagValues.Enum | FlagValues.VariableType)) != 0)
+		public void AddImpliedFlags()
+		{
+			if ((flags & (FlagValues.ClassHierarchy | FlagValues.DatabaseHierarchy |
+								 FlagValues.Enum | FlagValues.VariableType | FlagValues.InterfaceHierarchy | FlagValues.ModuleHierarchy)) != 0)
 				{  flags |= FlagValues.Code;  }
 
-			if ((flags & (FlagValues.Enum | FlagValues.ClassHierarchy)) != 0)
+			if ((flags & (FlagValues.Enum | FlagValues.ClassHierarchy | FlagValues.InterfaceHierarchy | FlagValues.ModuleHierarchy)) != 0)
 				{  flags |= FlagValues.VariableType;  }
 
 			if ((flags & (FlagValues.File | FlagValues.Documentation)) == 0)
@@ -378,6 +416,38 @@ namespace CodeClear.NaturalDocs.Engine.CommentTypes
 					{  flags |= FlagValues.DatabaseHierarchy;  }
 				else
 					{  flags &= ~FlagValues.DatabaseHierarchy;  }
+				}
+			}
+
+		/* Property: InterfaceHierarchy
+		 * Whether the comment type is part of the interface hierarchy.
+		 */
+		public bool InterfaceHierarchy
+			{
+			get
+				{ return ((flags & FlagValues.InterfaceHierarchy) != 0); }
+			set
+				{
+				if (value == true)
+					{ flags |= FlagValues.InterfaceHierarchy; }
+				else
+					{ flags &= ~FlagValues.InterfaceHierarchy; }
+				}
+			}
+
+		/* Property: ModuleHierarchy
+		* Whether the comment type is part of the module hierarchy.
+		*/
+		public bool ModuleHierarchy
+			{
+			get
+				{ return ((flags & FlagValues.ModuleHierarchy) != 0); }
+			set
+				{
+				if (value == true)
+					{ flags |= FlagValues.ModuleHierarchy; }
+				else
+					{ flags &= ~FlagValues.ModuleHierarchy; }
 				}
 			}
 

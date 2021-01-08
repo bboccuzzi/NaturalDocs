@@ -84,6 +84,26 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML
 				{  return (InHierarchy && classString.Hierarchy == Hierarchy.Class);  }
 			}
 
+		/* Property: IsInterface
+		 * Whether the page is for an interface.  If you need to know whether the page is for any page that is part of the
+		 * interface hierarchy, use <InHierarchy> instead.
+		 */
+		public bool IsInterface
+			{
+			get
+				{  return (InHierarchy && classString.Hierarchy == Hierarchy.Interface);  }
+			}
+
+		/* Property: IsModule
+		 * Whether the page is for a module.  If you need to know whether the page is for any page that is part of the
+		 * module hierarchy, use <InHierarchy> instead.
+		 */
+		public bool IsModule
+		{
+			get
+				{  return (InHierarchy && classString.Hierarchy == Hierarchy.Module);  }
+		}
+
 		/* Property: IsDatabase
 		 * Whether the page is for a database.
 		 */

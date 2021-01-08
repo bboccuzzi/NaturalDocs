@@ -51,6 +51,8 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML
 				PurgeAllSourceAndImageFolders(ref inPurgingOperation);
 				PurgeAllClassFolders(ref inPurgingOperation);
 				PurgeAllDatabaseFolders(ref inPurgingOperation);
+				PurgeAllInterfaceFolders(ref inPurgingOperation);
+				PurgeAllModuleFolders(ref inPurgingOperation);
 				PurgeAllMenuFolders(ref inPurgingOperation);
 				FinishedPurging(ref inPurgingOperation);
 

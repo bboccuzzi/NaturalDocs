@@ -38,6 +38,8 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 			{
 			rootFileMenu = null;
 			rootClassMenu = null;
+			rootInterfaceMenu = null;
+			rootModuleMenu = null;
 			rootDatabaseMenu = null;
 
 			addWhitespace = (EngineInstance.Config.ShrinkFiles == false);
@@ -45,13 +47,15 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 
 
 		/* Function: ConvertToJSON
-		 * Converts the passed <Menu> to a JSON menu structure, accessible from <RootFileMenu>, <RootClassMenu>, and 
-		 * <RootDatabaseMenu>.
+		 * Converts the passed <Menu> to a JSON menu structure, accessible from <RootFileMenu>, <RootClassMenu>, 
+		 * <RootDatabaseMenu>, <RootInterfaceMenu>, and <RootModuleMenu>.
 		 */
 		public void ConvertToJSON (Menu menu)
 			{
 			rootFileMenu = (menu.RootFileMenu != null ? ConvertToJSON(menu.RootFileMenu) : null);
 			rootClassMenu = (menu.RootClassMenu != null ? ConvertToJSON(menu.RootClassMenu) : null);
+			rootInterfaceMenu = (menu.RootInterfaceMenu != null ? ConvertToJSON(menu.RootInterfaceMenu) : null);
+			rootModuleMenu = (menu.RootModuleMenu != null ? ConvertToJSON(menu.RootModuleMenu) : null);
 			rootDatabaseMenu = (menu.RootDatabaseMenu != null ? ConvertToJSON(menu.RootDatabaseMenu) : null);
 
 			addWhitespace = (EngineInstance.Config.ShrinkFiles == false);
@@ -89,6 +93,10 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 				{  BuildDataFiles(rootFileMenu);  }
 			if (rootClassMenu != null)
 				{  BuildDataFiles(rootClassMenu);  }
+			if (rootInterfaceMenu != null)
+				{  BuildDataFiles(rootInterfaceMenu);  }
+			if (rootModuleMenu != null)
+				{  BuildDataFiles(rootModuleMenu);  }
 			if (rootDatabaseMenu != null)
 				{  BuildDataFiles(rootDatabaseMenu);  }
 
@@ -146,6 +154,16 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 					{
 					var language = EngineInstance.Languages.FromID(classString.LanguageID);
 					hashPath = Paths.Class.HashPath(language.SimpleIdentifier, classString.Symbol);  
+					}
+				else if (classString.Hierarchy == Hierarchy.Interface)
+					{
+					var language = EngineInstance.Languages.FromID(classString.LanguageID);
+					hashPath = Paths.Interface.HashPath(language.SimpleIdentifier, classString.Symbol);
+					}
+				else if (classString.Hierarchy == Hierarchy.Module)
+					{
+					var language = EngineInstance.Languages.FromID(classString.LanguageID);
+					hashPath = Paths.Module.HashPath(language.SimpleIdentifier, classString.Symbol);
 					}
 				else if (classString.Hierarchy == Hierarchy.Database)
 					{
@@ -262,9 +280,22 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 			else if (menuContainer is MenuEntries.Language)
 				{
 				var languageEntry = (MenuEntries.Language)menuContainer;
-				hashPath = Paths.Class.QualifierHashPath(languageEntry.WrappedLanguage.SimpleIdentifier,
+				if (languageEntry.Hierarchy == Hierarchy.Class)
+					{
+					hashPath = Paths.Class.QualifierHashPath(languageEntry.WrappedLanguage.SimpleIdentifier,
+																			  languageEntry.CondensedScopeString);
+					}
+				else if (languageEntry.Hierarchy == Hierarchy.Interface)
+					{
+						hashPath = Paths.Interface.QualifierHashPath(languageEntry.WrappedLanguage.SimpleIdentifier,
+																				  languageEntry.CondensedScopeString);
+					}
+				else if (languageEntry.Hierarchy == Hierarchy.Module)
+				{
+					hashPath = Paths.Module.QualifierHashPath(languageEntry.WrappedLanguage.SimpleIdentifier,
 																			  languageEntry.CondensedScopeString);
 				}
+			}
 
 			else if (menuContainer is MenuEntries.Scope)
 				{
@@ -294,6 +325,34 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 					hashPath = Paths.Class.QualifierHashPath(languageEntry.WrappedLanguage.SimpleIdentifier, 
 																				 scopeEntry.WrappedScopeString);
 					}
+				else if (scopeEntry.Hierarchy == Hierarchy.Interface)
+					{
+					// Walk up the tree until you find the language
+					MenuEntries.Container parentEntry = menuContainer.Parent;
+
+					while ((parentEntry is MenuEntries.Language) == false)
+						{
+						parentEntry = parentEntry.Parent;
+						}
+
+					var languageEntry = (MenuEntries.Language)parentEntry;
+					hashPath = Paths.Interface.QualifierHashPath(languageEntry.WrappedLanguage.SimpleIdentifier,
+																				 scopeEntry.WrappedScopeString);
+					}
+				else if (scopeEntry.Hierarchy == Hierarchy.Module)
+					{
+					// Walk up the tree until you find the language
+					MenuEntries.Container parentEntry = menuContainer.Parent;
+
+					while ((parentEntry is MenuEntries.Language) == false)
+						{
+						parentEntry = parentEntry.Parent;
+						}
+
+					var languageEntry = (MenuEntries.Language)parentEntry;
+					hashPath = Paths.Module.QualifierHashPath(languageEntry.WrappedLanguage.SimpleIdentifier,
+																				 scopeEntry.WrappedScopeString);
+					}
 				else if (scopeEntry.Hierarchy == Hierarchy.Database)
 					{
 					hashPath = Paths.Database.QualifierHashPath(scopeEntry.WrappedScopeString);
@@ -305,7 +364,7 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 			// If we're at one of the menu roots
 			else if (menuContainer.Parent == null)
 				{
-				if (menuContainer.Hierarchy == Hierarchy.File || menuContainer.Hierarchy == Hierarchy.Class)
+				if (menuContainer.Hierarchy == Hierarchy.File || menuContainer.Hierarchy == Hierarchy.Class || menuContainer.Hierarchy == Hierarchy.Interface || menuContainer.Hierarchy == Hierarchy.Module)
 					{
 					// If we're at a root file or class container that is not also a language or file source, it means there are multiple 
 					// languages and/or file sources beneath it and thus there is no shared hash path.  "CSharpClass:" and "PerlClass:",
@@ -366,6 +425,10 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 				{  AssignDataFiles(rootFileMenu, ref usedDataFiles);  }
 			if (rootClassMenu != null)
 				{  AssignDataFiles(rootClassMenu, ref usedDataFiles);  }
+			if (rootInterfaceMenu != null)
+				{  AssignDataFiles(rootInterfaceMenu, ref usedDataFiles);  }
+			if (rootInterfaceMenu != null)
+				{  AssignDataFiles(rootModuleMenu, ref usedDataFiles); }
 			if (rootDatabaseMenu != null)
 				{  AssignDataFiles(rootDatabaseMenu, ref usedDataFiles);  }
 
@@ -623,6 +686,16 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 				tabContainers.Add(rootClassMenu);
 				tabTypes.Add("Class");
 				}
+			if (rootInterfaceMenu != null)
+			{
+				tabContainers.Add(rootInterfaceMenu);
+				tabTypes.Add("Interface");
+			}
+			if (rootModuleMenu != null)
+			{
+				tabContainers.Add(rootModuleMenu);
+				tabTypes.Add("Module");
+			}
 			if (rootDatabaseMenu != null)
 				{
 				tabContainers.Add(rootDatabaseMenu);
@@ -717,6 +790,26 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 			}
 
 
+		/* Property: RootInterfaceMenu
+		 * The root container of all interface-based menu entries, or null if none.
+		 */
+		public JSONMenuEntries.Container RootInterfaceMenu
+			{
+			get
+				{  return rootInterfaceMenu;  }
+			}
+
+
+		/* Property: RootModuleMenu
+		 * The root container of all module-based menu entries, or null if none.
+		 */
+		public JSONMenuEntries.Container RootModuleMenu
+			{
+			get
+				{ return rootModuleMenu;  }
+			}
+
+
 		/* Property: RootDatabaseMenu
 		 * The root container of all database-based menu entries, or null if none.
 		 */
@@ -761,6 +854,16 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 		 * The root container of all class-based menu entries, or null if none.
 		 */
 		protected JSONMenuEntries.Container rootClassMenu;
+
+		/* var: rootInterfaceMenu
+		 * The root container of all interface-based menu entries, or null if none.
+		 */
+		protected JSONMenuEntries.Container rootInterfaceMenu;
+
+		/* var: rootModuleMenu
+		 * The root container of all module-based menu entires, or null if none.
+		 */
+		protected JSONMenuEntries.Container rootModuleMenu;
 
 		/* var: rootDatabaseMenu
 		 * The root container of all database-based menu entries, or null if none.

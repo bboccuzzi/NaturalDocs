@@ -43,6 +43,8 @@ HTML.Close: Close
 Menu.Files: Files
 Menu.Classes: Classes
 Menu.Database: Database
+Menu.Interfaces: Interfaces
+Menu.Modules: Modules
 
 Timestamp.Month1: January
 Timestamp.ShortMonth1: Jan

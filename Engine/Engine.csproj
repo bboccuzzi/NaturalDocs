@@ -50,6 +50,9 @@
     <Compile Include="Source\Languages\Parsers\SystemVerilog.cs" />
     <Compile Include="Source\Languages\Parsers\Verilog.cs" />
     <Compile Include="Source\Languages\Parsers\VHDL.cs" />
+    <Compile Include="Source\Output\HTML\Paths\Class.cs" />
+    <Compile Include="Source\Output\HTML\Paths\Interface.cs" />
+    <Compile Include="Source\Output\HTML\Paths\Module.cs" />
     <Compile Include="Source\Output\HTML\SearchIndex\SearchIndex_nd.cs" />
     <Compile Include="Source\StartupIssues.cs" />
     <Compile Include="Source\Config\Targets\ImageFolder.cs" />
@@ -105,7 +108,6 @@
     <Compile Include="Source\Output\HTML\Paths\SearchIndex.cs" />
     <Compile Include="Source\Output\HTML\Paths\Menu.cs" />
     <Compile Include="Source\Output\HTML\Paths\Database.cs" />
-    <Compile Include="Source\Output\HTML\Paths\Class.cs" />
     <Compile Include="Source\Output\HTML\Paths\SourceFile.cs" />
     <Compile Include="Source\Output\HTML\Paths\Utilities.cs" />
     <Compile Include="Source\Styles\FileSourceAdder.cs" />

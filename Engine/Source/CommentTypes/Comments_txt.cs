@@ -206,6 +206,8 @@ namespace CodeClear.NaturalDocs.Engine.CommentTypes
 			variableTypeRegex = new Regex.CommentTypes.VariableType();
 			classHierarchyRegex = new Regex.CommentTypes.ClassHierarchy();
 			databaseHierarchyRegex = new Regex.CommentTypes.DatabaseHierarchy();
+			interfaceHierarchyRegex = new Regex.CommentTypes.InterfaceHierarchy();
+			moduleHierarchyRegex = new Regex.CommentTypes.ModuleHierarchy();
 			enumRegex = new Regex.CommentTypes.Enum();
 			breakListsRegex = new Regex.CommentTypes.BreakLists();
 			keywordsRegex = new Regex.CommentTypes.Keywords();
@@ -679,6 +681,10 @@ namespace CodeClear.NaturalDocs.Engine.CommentTypes
 										{  currentCommentType.Flags.VariableType = true;  }
 									else if (classHierarchyRegex.IsMatch(flag))
 										{  currentCommentType.Flags.ClassHierarchy = true;  }
+									else if (interfaceHierarchyRegex.IsMatch(flag))
+										{ currentCommentType.Flags.InterfaceHierarchy = true; }
+									else if (moduleHierarchyRegex.IsMatch(flag))
+										{ currentCommentType.Flags.ModuleHierarchy = true; }
 									else if (databaseHierarchyRegex.IsMatch(flag))
 										{  currentCommentType.Flags.DatabaseHierarchy = true;  }
 									else if (enumRegex.IsMatch(flag))
@@ -1061,6 +1067,10 @@ namespace CodeClear.NaturalDocs.Engine.CommentTypes
 						{  output.Append(", Class Hierarchy");  }
 					else if (commentType.Flags.DatabaseHierarchy)
 						{  output.Append(", Database Hierarchy");  }
+					else if (commentType.Flags.InterfaceHierarchy)
+						{  output.Append(", Interface Hierarchy");  }
+					else if (commentType.Flags.ModuleHierarchy)
+						{  output.Append(", Module Hierarchy");  }
 
 					if (commentType.Flags.Enum)
 						{  output.Append(", Enum");  }
@@ -1154,6 +1164,11 @@ namespace CodeClear.NaturalDocs.Engine.CommentTypes
 		protected Regex.CommentTypes.VariableType variableTypeRegex;
 		protected Regex.CommentTypes.ClassHierarchy classHierarchyRegex;
 		protected Regex.CommentTypes.DatabaseHierarchy databaseHierarchyRegex;
+		protected Regex.CommentTypes.InterfaceHierarchy interfaceHierarchyRegex;
+		protected Regex.CommentTypes.ModuleHierarchy moduleHierarchyRegex;
+		// ^class ?(?:h(?:ie|ei)rarchy)?$ (Public, Single Line)
+		// ^interface ?(?:h(?:ie|ei)rarchy)?$ (Public, Single Line)
+		// ^module ?(?:h(?:ie|ei)rarchy)?$ (Public, Single Line)
 		protected Regex.CommentTypes.Enum enumRegex;
 		protected Regex.CommentTypes.BreakLists breakListsRegex;
 		protected Regex.CommentTypes.Keywords keywordsRegex;

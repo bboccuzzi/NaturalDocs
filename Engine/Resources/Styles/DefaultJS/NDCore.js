@@ -676,6 +676,20 @@ function NDLocation (hashString)
 			this.AddClassURLs();
 			}
 
+		else if (this.hashString.match(/^[A-Z]+Interface:/i) != null)
+			{
+			this.type = "Interface";
+			this.SplitPathAndMember();
+			this.AddInterfaceURLs();
+			}
+
+		else if (this.hashString.match(/^[A-Z]+Module:/i) != null)
+			{
+			this.type = "Module";
+			this.SplitPathAndMember();
+			this.AddModuleURLs();
+			}
+
 		else if (this.hashString.substr(0,9).toLowerCase() == "database:")
 			{
 			this.type = "Database";
@@ -760,6 +774,46 @@ function NDLocation (hashString)
 		{
 		var pathPrefix = this.path.match(/^([A-Z]+)Class:/i);
 		var basePath = "classes/" + pathPrefix[1] + "/" + this.path.substr(pathPrefix[0].length);
+
+		basePath = basePath.replace(/\.|::/g, "/");
+
+		this.contentPage = basePath + ".html";
+		this.summaryFile = basePath + "-Summary.js";
+		this.summaryTTFile = basePath + "-SummaryToolTips.js";
+
+		if (this.member != undefined)
+			{  this.contentPage += '#' + this.member;  }
+		};
+
+
+	/* Private Function: AddInterfaceURLs
+		Sets <contentPage>, <summaryFile>, and <summaryTTFile> for the location object.  The object's type
+		must be "File".
+	*/
+	this.AddInterfaceURLs = function ()
+		{
+		var pathPrefix = this.path.match(/^([A-Z]+)Interface:/i);
+		var basePath = "interfaces/" + pathPrefix[1] + "/" + this.path.substr(pathPrefix[0].length);
+
+		basePath = basePath.replace(/\.|::/g, "/");
+
+		this.contentPage = basePath + ".html";
+		this.summaryFile = basePath + "-Summary.js";
+		this.summaryTTFile = basePath + "-SummaryToolTips.js";
+
+		if (this.member != undefined)
+			{  this.contentPage += '#' + this.member;  }
+		};
+
+
+	/* Private Function: AddModuleURLs
+		Sets <contentPage>, <summaryFile>, and <summaryTTFile> for the location object.  The object's type
+		must be "File".
+	*/
+	this.AddModuleURLs = function ()
+		{
+		var pathPrefix = this.path.match(/^([A-Z]+)Module:/i);
+		var basePath = "modules/" + pathPrefix[1] + "/" + this.path.substr(pathPrefix[0].length);
 
 		basePath = basePath.replace(/\.|::/g, "/");
 

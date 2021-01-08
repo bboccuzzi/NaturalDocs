@@ -139,6 +139,17 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML
 					return Paths.Class.OutputFile(target.OutputFolder, language.SimpleIdentifier, page.ClassString.Symbol);
 					}
 
+				else if (page.IsInterface)
+					{
+					var language = target.EngineInstance.Languages.FromID(page.ClassString.LanguageID);
+					return Paths.Interface.OutputFile(target.OutputFolder, language.SimpleIdentifier, page.ClassString.Symbol);
+					}
+				else if (page.IsModule)
+					{
+					var language = target.EngineInstance.Languages.FromID(page.ClassString.LanguageID);
+					return Paths.Module.OutputFile(target.OutputFolder, language.SimpleIdentifier, page.ClassString.Symbol);
+					}
+
 				else if (page.IsDatabase)
 					{
 					return Paths.Database.OutputFile(target.OutputFolder, page.ClassString.Symbol);
@@ -238,6 +249,18 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML
 					{
 					var language = target.EngineInstance.Languages.FromID(page.ClassString.LanguageID);
 					fileHashPath = Paths.Class.HashPath(language.SimpleIdentifier, page.ClassString.Symbol);
+					}
+
+				else if (page.IsInterface)
+					{
+					var language = target.EngineInstance.Languages.FromID(page.ClassString.LanguageID);
+					fileHashPath = Paths.Interface.HashPath(language.SimpleIdentifier, page.ClassString.Symbol);
+					}
+
+				else if (page.IsModule)
+					{
+					var language = target.EngineInstance.Languages.FromID(page.ClassString.LanguageID);
+					fileHashPath = Paths.Module.HashPath(language.SimpleIdentifier, page.ClassString.Symbol);
 					}
 
 				else if (page.IsDatabase)

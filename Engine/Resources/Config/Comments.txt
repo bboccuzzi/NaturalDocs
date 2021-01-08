@@ -31,7 +31,7 @@ Comment Type: Interface
    Plural Display Name from Locale: Comments.txt.Interface.PluralDisplayName
 
    Scope: Start
-   Flags: Code, Variable Type, Class Hierarchy
+   Flags: Code, Variable Type, Interface Hierarchy
 
    Keywords:
       interface, interfaces
@@ -175,7 +175,8 @@ Comment Type: Module
     Display Name from Locale: Comments.txt.Module.DisplayName
     Plural Display Name from Locale: Comments.txt.Module.PluralDisplayName
 
-    Flags: Code
+    Scope: Start
+    Flags: Code, Module Hierarchy
 
     Keywords:
       module, modules

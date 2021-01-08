@@ -64,7 +64,7 @@ namespace CodeClear.NaturalDocs.Engine
 						{
 						var commentType = commentTypes.FromID(topics[i].CommentTypeID);
 
-						if (commentType.Flags.ClassHierarchy || commentType.Flags.DatabaseHierarchy)
+						if (commentType.Flags.ClassHierarchy || commentType.Flags.DatabaseHierarchy || commentType.Flags.InterfaceHierarchy || commentType.Flags.ModuleHierarchy)
 							{  remove = true;  }
 						}
 
@@ -614,21 +614,28 @@ namespace CodeClear.NaturalDocs.Engine
 					{
 					var topic = topics[0];
 					StringBuilder task = new StringBuilder("Building class view for");
-					
+
 					// Hierarchy
 					if (topic.ClassString.Hierarchy == Hierarchy.Database)
-						{  
-						task.Append(" database");  
+						{
+						task.Append(" database");
 						}
 					else
-						{  
+						{
 						// Language name
 						var language = (topics[0].LanguageID > 0 ? engineInstance.Languages.FromID(topics[0].LanguageID) : null);
+						var hierarchy_type_string = " class";
+
+						if (topic.ClassString.Hierarchy == Hierarchy.Interface)
+							{ hierarchy_type_string = " interface"; }
+						else if (topic.ClassString.Hierarchy == Hierarchy.Module)
+							{ hierarchy_type_string = " module"; }
+
 
 						if (language == null)
-							{  task.Append(" language ID " + topics[0].LanguageID + " class");  }
+							{  task.Append(" language ID " + topics[0].LanguageID + hierarchy_type_string);  }
 						else
-							{  task.Append(" " + language.Name + " class");  }
+							{  task.Append(" " + language.Name + hierarchy_type_string);  }
 						}
 
 					// Class name

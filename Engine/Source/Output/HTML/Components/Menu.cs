@@ -35,6 +35,8 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 			{
 			rootFileMenu = null;
 			rootClassMenu = null;
+			rootInterfaceMenu = null;
+			rootModuleMenu = null;
 			rootDatabaseMenu = null;
 
 			isCondensed = false;
@@ -132,6 +134,22 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 				container = languageEntry;
 				ignoreCase = (languageEntry.WrappedLanguage.CaseSensitive == false);
 				}
+
+			else if (classString.Hierarchy == Hierarchy.Interface)
+			{
+				MenuEntries.Language languageEntry = FindOrCreateLanguageEntryOf(classString);
+
+				container = languageEntry;
+				ignoreCase = (languageEntry.WrappedLanguage.CaseSensitive == false);
+			}
+
+			else if (classString.Hierarchy == Hierarchy.Module)
+			{
+				MenuEntries.Language languageEntry = FindOrCreateLanguageEntryOf(classString);
+
+				container = languageEntry;
+				ignoreCase = (languageEntry.WrappedLanguage.CaseSensitive == false);
+			}
 
 			else if (classString.Hierarchy == Hierarchy.Database)
 				{
@@ -236,6 +254,46 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 					}
 				}
 
+			if (rootInterfaceMenu != null)
+				{
+				rootInterfaceMenu.Condense();
+
+				// If there's only one language we can remove the top level container.
+				if (rootInterfaceMenu.Members.Count == 1)
+					{
+					MenuEntries.Language languageEntry = (MenuEntries.Language)rootInterfaceMenu.Members[0];
+
+					// We can overwrite the language name with the tab title.  We're not going to preserve an unnecessary level
+					// for the language.
+					languageEntry.Title = rootInterfaceMenu.Title;
+
+					// However, we are going to keep CondensedTitles because we want all scope levels to be visible, even if
+					// they're empty.
+
+					rootInterfaceMenu = languageEntry;
+					}
+				}
+
+			if (rootModuleMenu != null)
+			{
+				rootModuleMenu.Condense();
+
+				// If there's only one language we can remove the top level container.
+				if (rootModuleMenu.Members.Count == 1)
+				{
+					MenuEntries.Language languageEntry = (MenuEntries.Language)rootModuleMenu.Members[0];
+
+					// We can overwrite the language name with the tab title.  We're not going to preserve an unnecessary level
+					// for the language.
+					languageEntry.Title = rootModuleMenu.Title;
+
+					// However, we are going to keep CondensedTitles because we want all scope levels to be visible, even if
+					// they're empty.
+
+					rootModuleMenu = languageEntry;
+				}
+			}
+
 			if (rootDatabaseMenu != null)
 			   {
 			   rootDatabaseMenu.Condense();
@@ -277,6 +335,12 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 
 			if (rootClassMenu != null)
 				{  rootClassMenu.Sort();  }
+
+			if (rootInterfaceMenu != null)
+				{  rootInterfaceMenu.Sort();  }
+
+			if (rootModuleMenu != null)
+				{  rootModuleMenu.Sort();  }
 
 			if (rootDatabaseMenu != null)
 				{  rootDatabaseMenu.Sort();  }
@@ -373,11 +437,10 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 		 */
 		protected MenuEntries.Language FindOrCreateLanguageEntryOf (Symbols.ClassString classString)
 			{
-			var language = EngineInstance.Languages.FromID(classString.LanguageID);
-			var languageEntry = FindLanguageEntry(language);
+			var languageEntry = FindLanguageEntry(classString);
 
 			if (languageEntry == null)
-				{  languageEntry = CreateLanguageEntry(language);  }
+				{  languageEntry = CreateLanguageEntry(classString);  }
 
 			return languageEntry;
 			}
@@ -386,23 +449,61 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 		/* Function: CreateLanguageEntry
 		 * Creates an entry for the language, adds it to the class menu, and returns it.  It will also create the <rootClassMenu> 
 		 * container if necessary.
+		 * TODO: Support for separating SystemVerilog, Verilog, VHDL???
 		 */
-		protected MenuEntries.Language CreateLanguageEntry (Languages.Language language)
+		protected MenuEntries.Language CreateLanguageEntry (Symbols.ClassString classString)
 			{
+			var language = EngineInstance.Languages.FromID(classString.LanguageID);
+			var hierarchy = classString.Hierarchy;
+			MenuEntries.Language languageEntry = null;
 			#if DEBUG
-			if (FindLanguageEntry(language) != null)
+			if (FindLanguageEntry(classString) != null)
 				{  throw new Exception ("Tried to create a language entry that already existed in the menu.");  }
 			#endif
 
 			if (rootClassMenu == null)
 				{
+				//TODO - temp
 				rootClassMenu = new MenuEntries.Container(Hierarchy.Class);
 				rootClassMenu.Title = Engine.Locale.Get("NaturalDocs.Engine", "Menu.Classes");
 				}
+			if (rootInterfaceMenu == null)
+			{
+				//TODO - temp
+				rootInterfaceMenu = new MenuEntries.Container(Hierarchy.Interface);
+				rootInterfaceMenu.Title = Engine.Locale.Get("NaturalDocs.Engine", "Menu.Interfaces");
+			}
+			if (rootModuleMenu == null)
+			{
+				//TODO - temp
+				rootModuleMenu = new MenuEntries.Container(Hierarchy.Module);
+				rootModuleMenu.Title = Engine.Locale.Get("NaturalDocs.Engine", "Menu.Modules");
+			}
 
-			MenuEntries.Language languageEntry = new MenuEntries.Language(language, Hierarchy.Class);
-			languageEntry.Parent = rootClassMenu;
-			rootClassMenu.Members.Add(languageEntry);
+			// TODO - temp
+			if (hierarchy == Hierarchy.Class)
+			{
+				languageEntry = new MenuEntries.Language(language, Hierarchy.Class);
+				languageEntry.Parent = rootClassMenu;
+				rootClassMenu.Members.Add(languageEntry);
+			}
+			else if (hierarchy == Hierarchy.Module)
+			{
+				languageEntry = new MenuEntries.Language(language, Hierarchy.Module);
+				languageEntry.Parent = rootModuleMenu;
+				rootModuleMenu.Members.Add(languageEntry);
+			}
+			else if (hierarchy == Hierarchy.Interface)
+			{
+				languageEntry = new MenuEntries.Language(language, Hierarchy.Interface);
+				languageEntry.Parent = rootInterfaceMenu;
+				rootInterfaceMenu.Members.Add(languageEntry);
+			}
+			else
+            {
+				// TODO - throw 'non implementation' error
+            }
+
 
 			return languageEntry;
 			}
@@ -411,16 +512,30 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 		/* Function: FindLanguageEntry
 		 * Returns the entry that contains the passed language, or null if there isn't one yet.
 		 */
-		protected MenuEntries.Language FindLanguageEntry (Languages.Language language)
+		protected MenuEntries.Language FindLanguageEntry (Symbols.ClassString classString)
 			{
-			if (rootClassMenu == null)
+			var language = EngineInstance.Languages.FromID(classString.LanguageID);
+			MenuEntries.Container rootMenu;
+			if (classString.Hierarchy == Hierarchy.Class)
+            {
+				rootMenu = rootClassMenu;
+            }
+			else if (classString.Hierarchy == Hierarchy.Module)
+            {
+				rootMenu = rootModuleMenu;
+            }
+			else
+            {
+				rootMenu = rootInterfaceMenu;
+            }
+			if (rootMenu == null)
 				{  return null;  }
 
 			// If the menu only had one language and it was condensed, the root class entry may have been replaced
 			// by that language.
-			else if (rootClassMenu is MenuEntries.Language)
+			else if (rootMenu is MenuEntries.Language)
 				{
-				MenuEntries.Language languageEntry = (MenuEntries.Language)rootClassMenu;
+				MenuEntries.Language languageEntry = (MenuEntries.Language)rootMenu;
 
 				if (languageEntry.WrappedLanguage == language)
 					{  return languageEntry;  }
@@ -431,7 +546,7 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 			// The only other possibility is a container with a flat list of languages.
 			else
 				{
-				foreach (var member in rootClassMenu.Members)
+				foreach (var member in rootMenu.Members)
 					{
 					if (member is MenuEntries.Language)
 						{
@@ -480,6 +595,33 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 			}
 
 
+		/* Property: RootInterfaceMenu
+		 * 
+		 * The root container of all interface-based menu entries, or null if none.
+		 * 
+		 * Before condensation this will be a container with only <MenuEntries.Languages> as its members.  However,
+		 * after condensation it may be a file source if there was only one.
+		 */
+		public MenuEntries.Container RootInterfaceMenu
+			{
+			get
+				{  return rootInterfaceMenu;  }
+			}
+
+
+		/* Property: RootModule
+		 * 
+		 * The root container of all module-based menu entries, or null if none.
+		 * 
+		 * Before condensation this will be a container with only <MenuEntries.Languages> as its members.  However,
+		 * after condensation it may be a file source if there was only one.
+		 */
+		public MenuEntries.Container RootModuleMenu
+			{
+			get
+				{  return rootModuleMenu;  }
+			}
+
 		/* Property: RootDatabaseMenu
 		 * 
 		 * The root container of all database-based menu entries, or null if none.
@@ -513,6 +655,24 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 		 * after condensation it may be a language if there was only one.
 		 */
 		protected MenuEntries.Container rootClassMenu;
+
+		/* var: rootInterfaceMenu
+		 * 
+		 * The root container of all interface-based menu entries, or null if none.
+		 * 
+		 * Before condensation this will be a container with only <MenuEntries.Languages> as its members.  However,
+		 * after condensation it may be a language if there was only one.
+		 */
+		protected MenuEntries.Container rootInterfaceMenu;
+
+		/* var: rootModuleMenu
+		 * 
+		 * The root container of all module-based menu entries, or null if none.
+		 * 
+		 * Before condensation this will be a container with only <MenuEntries.Languages> as its members.  However,
+		 * after condensation it may be a language if there was only one.
+		 */
+		protected MenuEntries.Container rootModuleMenu;
 
 		/* var: rootDatabaseMenu
 		 * 

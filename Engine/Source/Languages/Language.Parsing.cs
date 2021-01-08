@@ -3109,9 +3109,23 @@ namespace CodeClear.NaturalDocs.Engine.Languages
 					// Set Topic.ClassString and ParentElement.DefaultChildClassString if appropriate
 
 					if (commentType.Scope == CommentType.ScopeValue.Start && 
-						  (commentType.Flags.ClassHierarchy == true || commentType.Flags.DatabaseHierarchy == true) )
+						  (commentType.Flags.ClassHierarchy == true || commentType.Flags.DatabaseHierarchy == true || commentType.Flags.InterfaceHierarchy == true || commentType.Flags.ModuleHierarchy == true) )
 						{
-						Hierarchy hierarchy = (commentType.Flags.ClassHierarchy ? Hierarchy.Class : Hierarchy.Database);
+						// TODO - work on this...
+						//Hierarchy hierarchy = (commentType.Flags.ClassHierarchy ? Hierarchy.Class : Hierarchy.Database);
+						Hierarchy hierarchy = Hierarchy.Class;
+						if (commentType.Flags.DatabaseHierarchy == true)
+						{
+							hierarchy = Hierarchy.Database;
+						}
+						else if (commentType.Flags.InterfaceHierarchy == true)
+						{
+							hierarchy = Hierarchy.Interface;
+						}
+						else if (commentType.Flags.ModuleHierarchy == true)
+						{
+							hierarchy = Hierarchy.Module;
+						}
 						Language language = EngineInstance.Languages.FromID(topic.LanguageID);
 
 						ClassString classString = ClassString.FromParameters(hierarchy, language.ID, language.CaseSensitive, topicSymbol);

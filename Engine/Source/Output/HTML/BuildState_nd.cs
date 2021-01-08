@@ -169,6 +169,10 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML
 							{  hierarchy = Hierarchy.Class;  }
 						else if (menuDataFileType == "database")
 							{  hierarchy = Hierarchy.Database;  }
+						else if (menuDataFileType == "interfaces")
+							{ hierarchy = Hierarchy.Interface; }
+						else if (menuDataFileType == "modules")
+							{ hierarchy = Hierarchy.Module; }
 						else
 							{  throw new NotImplementedException();  }
 
@@ -257,6 +261,12 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML
 							break;
 						case Hierarchy.Database:
 							binaryFile.WriteString("database");
+							break;
+						case Hierarchy.Interface:
+							binaryFile.WriteString("interfaces");
+							break;
+						case Hierarchy.Module:
+							binaryFile.WriteString("modules");
 							break;
 						default:
 							throw new NotImplementedException();

@@ -299,10 +299,16 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 					if (aCommentType.Flags.DatabaseHierarchy != bCommentType.Flags.DatabaseHierarchy)
 						{  return (aCommentType.Flags.DatabaseHierarchy ? -1 : 1);  }
 
+					if (aCommentType.Flags.InterfaceHierarchy != bCommentType.Flags.InterfaceHierarchy)
+						{ return (aCommentType.Flags.InterfaceHierarchy ? -1 : 1); }
 
-					// Still equal, now compare the qualifiers in a case-sensitive way to break ties.
+					if (aCommentType.Flags.ModuleHierarchy != bCommentType.Flags.ModuleHierarchy)
+						{ return (aCommentType.Flags.ModuleHierarchy ? -1 : 1); }
 
-					result = string.Compare(a.DisplayName, a.EndOfDisplayNameQualifiers, 
+
+						// Still equal, now compare the qualifiers in a case-sensitive way to break ties.
+
+						result = string.Compare(a.DisplayName, a.EndOfDisplayNameQualifiers, 
 														b.DisplayName, b.EndOfDisplayNameQualifiers, shorterNonQualifierLength, false);
 
 					if (result != 0)

@@ -318,6 +318,8 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML
 				// Purge everything so no stray files are left behind from the previous build.
 				PurgeAllSourceAndImageFolders(ref inPurgingOperation);
 				PurgeAllClassFolders(ref inPurgingOperation);
+				PurgeAllInterfaceFolders(ref inPurgingOperation);
+				PurgeAllModuleFolders(ref inPurgingOperation);
 				PurgeAllDatabaseFolders(ref inPurgingOperation);
 				PurgeAllStyleFolders(ref inPurgingOperation);
 				PurgeAllMenuFolders(ref inPurgingOperation);
@@ -579,7 +581,25 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML
 			{
 			PurgeFolder( Paths.Database.OutputFolder(this.OutputFolder), ref inPurgingOperation );
 			}
+		
 
+		/* Function: PurgeAllInterfaceFolders
+		 * Deletes all the interface output folders and their contents.  Pass a reference to a bool that tracks whether we've registered a 
+		 * PossiblyLongOperation for purging with <Engine.Instance>.  Call <FinishedPurging()> after all purging calls.
+		*/
+		protected void PurgeAllInterfaceFolders (ref bool inPurgingOperation)
+		{
+			PurgeFolder(Paths.Interface.OutputFolder(this.OutputFolder), ref inPurgingOperation);
+		}
+
+		/* Function: PurgeAllModuleFolds
+		 * Deletes all the module output folders and their contents.  Pass a reference to a bool that tracks whether we've registered a 
+         * PossiblyLongOperation for purging with <Engine.Instance>.  Call <FinishedPurging()> after all purging calls.
+		 */
+		protected void PurgeAllModuleFolders(ref bool inPurgingOperation)
+		{
+			PurgeFolder(Paths.Module.OutputFolder(this.OutputFolder), ref inPurgingOperation);
+		}
 
 		/* Function: PurgeAllMenuFolders
 		 * Deletes all the menu output folders and their contents.  Pass a reference to a bool that tracks whether we've registered a 

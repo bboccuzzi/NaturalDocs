@@ -398,6 +398,8 @@ td {
 		}
 	#MFileTab .MTabIcon {  background: url("images/menu-tab-files.png") center center no-repeat;  }
 	#MClassTab .MTabIcon {  background: url("images/menu-tab-classes.png") center center no-repeat;  }
+	#MInterfaceTab .MTabIcon {  background: url("images/menu-tab-interfaces.png") center center no-repeat;  }
+	#MModuleTab .MTabIcon {  background: url("images/menu-tab-modules.png") center center no-repeat; }
 	#MDatabaseTab .MTabIcon {  background: url("images/menu-tab-database.png") center center no-repeat;  }
 
 	.MTabTitle {

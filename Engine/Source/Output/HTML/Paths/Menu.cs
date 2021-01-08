@@ -51,6 +51,12 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Paths
 				case Hierarchy.Database:
 					result.Append("database");
 					break;
+				case Hierarchy.Interface:
+					result.Append("interfaces");
+					break;
+				case Hierarchy.Module:
+					result.Append("modules");
+					break;
 				default:
 					throw new NotImplementedException();
 				}

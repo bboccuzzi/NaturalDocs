@@ -73,8 +73,21 @@ namespace CodeClear.NaturalDocs.Engine.Symbols
 				else
 					{  stringBuilder.Append('d');  }
 				}
-			else
-				{  throw new NotImplementedException();  }
+			else if (hierarchy == Hierarchy.Interface)
+				{
+				if (caseSensitive)
+					{ stringBuilder.Append('I'); }
+				else
+					{ stringBuilder.Append('i'); }
+				}
+			else if (hierarchy == Hierarchy.Module)
+				{
+				if (caseSensitive)
+					{ stringBuilder.Append('M'); }
+				else
+					{ stringBuilder.Append('m'); }
+				}
+			else {  throw new NotImplementedException();  }
 
 			do
 				{
@@ -185,6 +198,10 @@ namespace CodeClear.NaturalDocs.Engine.Symbols
 					{  return Hierarchy.Class;  }
 				else if (classString[0] == 'D' || classString[0] == 'd')
 					{  return Hierarchy.Database;  }
+				else if (classString[0] == 'I' || classString[0] == 'i')
+					{ return Hierarchy.Interface; }
+				else if (classString[0] == 'M' || classString[0] == 'm')
+					{ return Hierarchy.Module; }
 				else
 					{  throw new FormatException();  }
 				}
