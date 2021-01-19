@@ -637,13 +637,28 @@ td {
 		height: 100%;
 		border: 0 none;
 		}
+	.CTitleFileIcon {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        position: relative;
+		background: url("images/top-file-link.png") center center no-repeat;
+        top: 1px;
+        }
+	/* TODO - Not sure if this should be adjusted for IE yet */
+    .IE7 .CTitleFileIcon,
+    .IE6 .CTitleFileIcon {
+        top: 0;
+        }
 
+    /*#CTitleFile .CTitleFileIcon {  background: url("images/top-file-link.png") center center no-repeat;  }*/
 
 body.NDContentPage {
 	background-color: $ContentBackgroundColor;
 	padding: .5em 1em;
 	margin: 0;
 	}
+
 
 	.CTopic {
 		margin-bottom: 1em;

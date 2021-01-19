@@ -201,7 +201,7 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 							break;
 						}
 
-					output.EntityEncodeAndAppend(startStretch.TextBetween(endStretch));
+					output.EntityEncodeAndAppend(startStretch.TextBetween(endStretch)); //TODO - This is where syntax highlighted type appears
 
 					if (stretchType != SyntaxHighlightingType.Null &&
 						!(stretchType == SyntaxHighlightingType.Keyword && excludeKeywords) )

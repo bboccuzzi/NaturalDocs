@@ -190,8 +190,22 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 
 			output.Append("<div class=\"CTitle\">");
 			AppendWrappedTitle(context.Topic.Title, mode, output);
+			var file = EngineInstance.Files.FromID(context.Topic.FileID).FileName;
+			var file_source = EngineInstance.Files.FileSourceOf(EngineInstance.Files.FromID(context.Topic.FileID));
+			var root_folder = ((Files.FileSources.SourceFolder)file_source).Path.ParentFolder;
+			var localdir = file.MakeRelativeTo(root_folder);
+
+
+			// TODO - append file icon and link
+			// Want to also add a class for link to file
+			//file.FileName;
+
 			output.Append("</div>");
+			if (commentType.SimpleIdentifier != "Group")
+			{
+				output.Append("<span class=\"CTitleFileIcon\"></span>" + localdir.ToString());
 			}
+		}
 
 
 		/* Function: AppendPrototype
@@ -462,7 +476,7 @@ namespace CodeClear.NaturalDocs.Engine.Output.HTML.Components
 										 !(end.RawTextIndex - start.RawTextIndex == 1 &&
 										   (start.Character == '$' || start.Character == '@' || start.Character == '%')) )
 										{
-										output.Append("<div class=\"CDLParameterType\">");
+										output.Append("<div class=\"CDLParameterType\">"); //TODO - THIS
 										AppendSyntaxHighlightedTextWithTypeLinks(start, end, output, links, linkTargets);
 										output.Append("</div>");
 										}
